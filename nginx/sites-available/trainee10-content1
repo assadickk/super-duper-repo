@@ -1,0 +1,11 @@
+server {
+    listen 9090;
+    server_name localhost;
+
+    root /var/www/trainee10.ddnsgeek.com/html;
+    index content1.html;
+
+    location / {
+		try_files $uri $uri/ =404;
+	}
+}
