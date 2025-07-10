@@ -1,4 +1,8 @@
 // def gv
+def remote = [:]
+remote.name = "node-1"
+remote.host = "10.000.000.153"
+remote.allowAnyHosts = true
 
 pipeline {
     agent any
@@ -12,6 +16,7 @@ pipeline {
         GITHUB_ID = 'jenkins_git'
         IMAGE_TAG = "v$BUILD_NUMBER"
         IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
+        WORK_DIR = '/home/ubuntu/'
     }
 
     stages {
@@ -68,5 +73,23 @@ pipeline {
                 }
             }
         }
-    }        
+    }     
+
+    post {
+        success {
+            post {
+                success {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ub1_ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                        sshCommand remote: [
+                            host: "${env.REMOTE_HOST}",
+                            user: "${SSH_USER}",
+                            identityFile: "${SSH_KEY}",
+                            allowAnyHosts: true
+                        ],
+                        command: "cd ${env.WORK_DIR} && docker compose pull && docker compose up -d"
+                    }
+                }
+            }
+        }
+    }
 }
