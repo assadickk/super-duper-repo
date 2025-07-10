@@ -2,11 +2,15 @@
 
 pipeline {
     agent any
+
+    // tools {
+    //     docker 'Docker'
+    // }
+
     environment {
         DOCKERHUB_ID = 'dockerhub'
         GITHUB_ID = 'jenkins_git'
         IMAGE_TAG = "v$BUILD_NUMBER"
-        IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
         IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
     }
 
@@ -32,6 +36,7 @@ pipeline {
                 IMAGE_BASE = 'asadkrmv/jenkins-nginx'
                 DOCKERFILE_NAME = "./nginx/Dockerfile"
                 BUILD_CONTEXT = "./nginx"
+                IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
             }
             
             steps {
