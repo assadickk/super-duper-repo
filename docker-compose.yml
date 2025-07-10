@@ -3,7 +3,7 @@ services:
     image: asadkrmv/trainee-apache
 
   nginx:
-    build: nginx/
+    image: asadkrmv/jenkins-nginx
     volumes:
       - nginx-logs:/var/log/nginx/
     ports:
@@ -12,7 +12,7 @@ services:
       - apache
     
   logs:
-    build: logs/
+    image: asadkrmv/jenkins-logs
     volumes:
       - nginx-logs:/var/log/nginx/
     depends_on:

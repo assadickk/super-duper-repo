@@ -1,27 +1,23 @@
-// def gv
+def gv
 
 pipeline {
     agent any
-
-    // tools {
-    //     docker 'Docker'
-    // }
-
     environment {
         DOCKERHUB_ID = 'dockerhub'
         GITHUB_ID = 'jenkins_git'
         IMAGE_TAG = "v$BUILD_NUMBER"
+        IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
         IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
     }
 
     stages {
-        // stage('init') {
-        //     steps {
-        //         script {
-        //             gv = load "script.groovy"
-        //         }
-        //     }
-        // }
+        stage('init') {
+            steps {
+                script {
+                    gv = load "script.groovy"
+                }
+            }
+        }
 
         // stage('Clone repo') {
         //     steps {
@@ -36,16 +32,13 @@ pipeline {
                 IMAGE_BASE = 'asadkrmv/jenkins-nginx'
                 DOCKERFILE_NAME = "./nginx/Dockerfile"
                 BUILD_CONTEXT = "./nginx"
-                IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
             }
             
             steps {
                 script {
-                    def dockerImage = docker.build(env.IMAGE_NAME, "-f ${env.DOCKERFILE_NAME} ${env.BUILD_CONTEXT}")
-                    docker.withRegistry('', env.DOCKERHUB_ID) {
-                        dockerImage.push()
-                        dockerImage.push("latest")
-                    }
+                    def dockerImage = gv.buildImage()
+                    gv.pushImage(dockerImage)
+                    gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)
                 }
             }
         }
@@ -55,18 +48,15 @@ pipeline {
                 IMAGE_BASE = 'asadkrmv/jenkins-logs'
                 DOCKERFILE_NAME = "./logs/Dockerfile"
                 BUILD_CONTEXT = "./logs"
-                IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
             }
             
             steps {
                 script {
-                    def dockerImage = docker.build(env.IMAGE_NAME, "-f ${env.DOCKERFILE_NAME} ${env.BUILD_CONTEXT}")
-                    docker.withRegistry('', env.DOCKERHUB_ID) {
-                        dockerImage.push()
-                        dockerImage.push("latest")
-                    }
-                }
+                    def dockerImage = gv.buildImage()
+                    gv.pushImage(dockerImage)
+                    gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)                }
             }
         }
+
     }        
 }
