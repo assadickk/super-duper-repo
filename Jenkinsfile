@@ -1,15 +1,5 @@
-// def gv
-def remote = [:]
-remote.name = "node-1"
-remote.host = "10.000.000.153"
-remote.allowAnyHosts = true
-
 pipeline {
     agent any
-
-    // tools {
-    //     docker 'Docker'
-    // }
 
     environment {
         DOCKERHUB_ID = 'dockerhub'
@@ -21,22 +11,6 @@ pipeline {
     }
 
     stages {
-        // stage('init') {
-        //     steps {
-        //         script {
-        //             gv = load "script.groovy"
-        //         }
-        //     }
-        // }
-
-        // stage('Clone repo') {
-        //     steps {
-        //         git branch: 'main',
-        //             credentialsId: "${env.GITHUB_ID}",
-        //             url: 'git@github.com:assadickk/super-duper-repo.git'
-        //     }
-        // }
-
         stage('Build and push nginx image') {
             environment {
                 IMAGE_BASE = 'asadkrmv/jenkins-nginx'
@@ -81,7 +55,7 @@ pipeline {
             withCredentials([sshUserPrivateKey(credentialsId: 'ub1_ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                 sshCommand remote: [
                     host: "${env.REMOTE_HOST}",
-                    user: 'ubuntu',
+                    user: '${SSH_USER}',
                     name: "${SSH_USER}",
                     identityFile: "${SSH_KEY}",
                     allowAnyHosts: true
