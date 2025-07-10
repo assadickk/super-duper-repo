@@ -19,13 +19,13 @@ pipeline {
             }
         }
 
-        stage('Clone repo') {
-            steps {
-                git branch: 'main',
-                    credentialsId: "${env.GITHUB_ID}",
-                    url: 'git@github.com:assadickk/super-duper-repo.git'
-            }
-        }
+        // stage('Clone repo') {
+        //     steps {
+        //         git branch: 'main',
+        //             credentialsId: "${env.GITHUB_ID}",
+        //             url: 'git@github.com:assadickk/super-duper-repo.git'
+        //     }
+        // }
 
         stage('Build and push nginx image') {
             environment {
