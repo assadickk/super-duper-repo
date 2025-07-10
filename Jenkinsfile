@@ -21,7 +21,7 @@ pipeline {
 
         stage('Clone repo') {
             steps {
-                git branch: 'master',
+                git branch: 'main',
                     credentialsId: "${env.GITHUB_ID}",
                     url: 'git@github.com:assadickk/super-duper-repo.git'
             }
