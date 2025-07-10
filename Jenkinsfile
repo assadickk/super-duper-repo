@@ -17,6 +17,7 @@ pipeline {
         IMAGE_TAG = "v$BUILD_NUMBER"
         IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
         WORK_DIR = '/home/ubuntu/'
+        REMOTE_HOST = '56.228.11.61'
     }
 
     stages {
