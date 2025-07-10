@@ -55,7 +55,7 @@ pipeline {
             withCredentials([sshUserPrivateKey(credentialsId: 'ub1_ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                 sshCommand remote: [
                     host: "${env.REMOTE_HOST}",
-                    user: '${SSH_USER}',
+                    user: 'ubuntu',
                     name: "${SSH_USER}",
                     identityFile: "${SSH_KEY}",
                     allowAnyHosts: true
