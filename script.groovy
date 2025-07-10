@@ -1,16 +1,16 @@
-def buildImage() {
-    return docker.build("${env.IMAGE_NAME}", "-f ${env.DOCKERFILE_NAME} ${env.BUILD_CONTEXT}")
+def buildImage(imageName, dockerfileName, buildContext) {
+    return docker.build(imageName, "-f ${dockerfileName} ${buildContext}")
 }
 
-def pushImage(dockerImage) {
-    docker.withRegistry('', "${DOCKERHUB_ID}") {
+def pushImage(dockerImage, dockerhubId) {
+    docker.withRegistry('', dockerhubId) {
         dockerImage.push()
         dockerImage.push("latest")
     }
 }
 
 def removeImages(imageName, imageNameLatest) {
-    sh "docker rmi ${imageName} ${imageNameLatest}"
+    sh "docker rmi ${imageName} ${imageNameLatest} || true"
 }
 
 return this

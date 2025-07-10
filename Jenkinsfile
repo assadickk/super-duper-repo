@@ -3,7 +3,8 @@ def gv
 pipeline {
     agent any
     environment {
-        DOCKERHUB_ID = 'docker-creds'
+        DOCKERHUB_ID = 'dockerhub'
+        GITHUB_ID = 'jenkins_git'
         IMAGE_TAG = "v$BUILD_NUMBER"
         IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
         IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
@@ -21,7 +22,7 @@ pipeline {
         stage('Clone repo') {
             steps {
                 git branch: 'master',
-                    credentialsId: 'jenkins_git',
+                    credentialsId: "${env.GITHUB_ID}",
                     url: 'git@github.com:assadickk/super-duper-repo.git'
             }
         }
@@ -32,12 +33,10 @@ pipeline {
                 DOCKERFILE_NAME = "./nginx/Dockerfile"
                 BUILD_CONTEXT = "./nginx"
             }
-
-            def dockerImage
             
             steps {
                 script {
-                    dockerImage = gv.buildImage()
+                    def dockerImage = gv.buildImage()
                     gv.pushImage(dockerImage)
                     gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)
                 }
@@ -51,11 +50,9 @@ pipeline {
                 BUILD_CONTEXT = "./logs"
             }
             
-            def dockerImage
-            
             steps {
                 script {
-                    dockerImage = gv.buildImage()
+                    def dockerImage = gv.buildImage()
                     gv.pushImage(dockerImage)
                     gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)                }
             }
