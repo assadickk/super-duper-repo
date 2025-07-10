@@ -1,0 +1,64 @@
+// def gv
+
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_ID = 'dockerhub'
+        GITHUB_ID = 'jenkins_git'
+        IMAGE_TAG = "v$BUILD_NUMBER"
+        IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
+        IMAGE_NAME_LATEST = "${env.IMAGE_BASE}:latest"
+    }
+
+    stages {
+        // stage('init') {
+        //     steps {
+        //         script {
+        //             gv = load "script.groovy"
+        //         }
+        //     }
+        // }
+
+        // stage('Clone repo') {
+        //     steps {
+        //         git branch: 'main',
+        //             credentialsId: "${env.GITHUB_ID}",
+        //             url: 'git@github.com:assadickk/super-duper-repo.git'
+        //     }
+        // }
+
+        stage('Build and push nginx image') {
+            environment {
+                IMAGE_BASE = 'asadkrmv/jenkins-nginx'
+                DOCKERFILE_NAME = "./nginx/Dockerfile"
+                BUILD_CONTEXT = "./nginx"
+            }
+            
+            steps {
+                script {
+                    def dockerImage = docker.build(env.IMAGE_NAME, "-f ${env.DOCKERFILE_NAME} ${env.BUILD_CONTEXT}")
+                    docker.withRegistry('', env.DOCKERHUB_ID) {
+                        dockerImage.push()
+                        dockerImage.push("latest")
+                    }
+                }
+            }
+        }
+
+        stage('Build and push logs image') {
+            environment {
+                IMAGE_BASE = 'asadkrmv/jenkins-logs'
+                DOCKERFILE_NAME = "./logs/Dockerfile"
+                BUILD_CONTEXT = "./logs"
+            }
+            
+            steps {
+                script {
+                    def dockerImage = gv.buildImage()
+                    gv.pushImage(dockerImage)
+                    gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)                }
+            }
+        }
+
+    }        
+}
