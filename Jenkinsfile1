@@ -55,15 +55,18 @@ pipeline {
                 IMAGE_BASE = 'asadkrmv/jenkins-logs'
                 DOCKERFILE_NAME = "./logs/Dockerfile"
                 BUILD_CONTEXT = "./logs"
+                IMAGE_NAME = "${env.IMAGE_BASE}:${env.IMAGE_TAG}"
             }
             
             steps {
                 script {
-                    def dockerImage = gv.buildImage()
-                    gv.pushImage(dockerImage)
-                    gv.removeImages(env.IMAGE_NAME, env.IMAGE_NAME_LATEST)                }
+                    def dockerImage = docker.build(env.IMAGE_NAME, "-f ${env.DOCKERFILE_NAME} ${env.BUILD_CONTEXT}")
+                    docker.withRegistry('', env.DOCKERHUB_ID) {
+                        dockerImage.push()
+                        dockerImage.push("latest")
+                    }
+                }
             }
         }
-
     }        
 }
